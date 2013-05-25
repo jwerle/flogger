@@ -79,6 +79,15 @@ flog.debug("foo");
 flog.error("oops!");
 ```
 
+## benchmark
+
+
+```
+  console.log completed 1000 in 15 ms
+  process.stdout.write completed 1000 in 6 ms
+  flog.log completed 1000 in 4 ms
+```
+
 ## license
 
 MIT

@@ -1,5 +1,5 @@
 var flog = require('./'), util = require('util')
-var n = 100;
+var n = 1000;
 var write = process.stdout.write.bind(process.stdout)
 var msgs = []
 
