@@ -7,6 +7,75 @@
 
 using namespace v8;
 
+/**
+ * borrowed from `https://github.com/visionmedia/term.c`
+ *
+ * thanks tj
+ */
+
+#define _term_write(c) printf("\e[" c);
+
+Handle<Value>
+term_write (const Arguments &args) {
+	String::Utf8Value c(args[0]);
+	printf("%s", *c);
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_reset (const Arguments &args) { 
+	_term_write("0m");
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_bright (const Arguments &args) { 
+	_term_write("1m");
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_bold (const Arguments &args) { 
+	term_bright(args);
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_clear (const Arguments &args) { 
+	term_reset(args);
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_dim (const Arguments &args) { 
+	_term_write("2m");
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_underline (const Arguments &args) { 
+	_term_write("4m");
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_blink (const Arguments &args) { 
+	_term_write("5m");
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_reverse (const Arguments &args) { 
+	_term_write("7m");
+	return v8::Undefined();
+}
+
+Handle<Value>
+term_hidden (const Arguments &args) { 
+	_term_write("8m");
+	return v8::Undefined();
+}
+
 Handle<Value> 
 log (const Arguments& args);
 
@@ -27,39 +96,28 @@ error (const Arguments& args);
 
 void 
 init (Handle<Object> target) {
+
   NODE_SET_METHOD(target, "log", log);
   NODE_SET_METHOD(target, "info", info);
   NODE_SET_METHOD(target, "debug", debug);
   NODE_SET_METHOD(target, "warn", warn);
   NODE_SET_METHOD(target, "error", error);
   NODE_SET_METHOD(target, "customlog", customlog);
+
+  // expose term functions
+	NODE_SET_METHOD(target, "term_write", term_write);
+	NODE_SET_METHOD(target, "term_bold", term_bold);
+	NODE_SET_METHOD(target, "term_clear", term_clear);
+	NODE_SET_METHOD(target, "term_reset", term_reset);
+	NODE_SET_METHOD(target, "term_bright", term_bright);
+	NODE_SET_METHOD(target, "term_dim", term_dim);
+	NODE_SET_METHOD(target, "term_underline", term_underline);
+	NODE_SET_METHOD(target, "term_blink", term_blink);
+	NODE_SET_METHOD(target, "term_reverse", term_reverse);
+	NODE_SET_METHOD(target, "term_hidden", term_hidden);
 }
 
 NODE_MODULE(flog, init);
-
-
-/**
- * borrowed from `https://github.com/visionmedia/term.c`
- *
- * thanks tj
- */
-
-#define term_write(c) printf("\e[" c);
-
-// aliases
-
-#define term_bold term_bright
-#define term_clear term_erase
-
-// display
-
-#define term_reset() term_write("0m")
-#define term_bright() term_write("1m")
-#define term_dim() term_write("2m")
-#define term_underline() term_write("4m")
-#define term_blink() term_write("5m")
-#define term_reverse() term_write("7m")
-#define term_hidden() term_write("8m")
 
 int
 color_value (const char *name) {
@@ -83,7 +141,8 @@ flog (const char *level, const char *color, Handle<Value> val) {
 	else {
 		int n = color_value(color);
 		printf("  \e[3%dm%s: ", n, level);
-		term_reset();
+		// reset
+		_term_write("0m");
 		printf("%s\n", *value);
 	}
 
@@ -92,12 +151,11 @@ flog (const char *level, const char *color, Handle<Value> val) {
 
 Handle<Value> 
 customlog (const Arguments& args) {
+	char level_str[256], color_str[256];
 	String::Utf8Value level(args[0]);
 	String::Utf8Value color(args[1]);
 	Handle<Value> message = args[2];
 
-	char level_str[256];
-	char color_str[256];
 	sprintf(level_str, "%s", *level);
 	sprintf(color_str, "%s", *color);
 	

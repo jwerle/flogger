@@ -4,7 +4,7 @@
 
 var nflog = require('bindings')('flog')
 	,	stream = require('stream')
-	, util = require('util')
+
 
 /**
  * Forms a message string
@@ -20,6 +20,55 @@ function formMessage (flog, message) {
 	msg = msg.replace(/%message/g, message);
 	return msg;
 }
+
+/**
+ * flog terminal functions
+ */
+
+Flog.term = Flog.prototype.term = {
+	write       : function () {
+		nflog.term_write.apply(nflog, arguments);
+		return this;
+	},
+	bold        : function () {
+		nflog.term_bold.apply(nflog, arguments);
+		return this;
+	},
+	clear       : function () {
+		nflog.term_clear.apply(nflog, arguments);
+		return this;
+	},
+	reset       : function () {
+		nflog.term_reset.apply(nflog, arguments);
+		return this;
+	},
+	bright      : function () {
+		nflog.term_bright.apply(nflog, arguments);
+		return this;
+	},
+	dim         : function () {
+		nflog.term_dim.apply(nflog, arguments);
+		return this;
+	},
+	underline   : function () {
+		nflog.term_underline.apply(nflog, arguments);
+		return this;
+	},
+	blink       : function () {
+		nflog.term_blink.apply(nflog, arguments);
+		return this;
+	},
+	reverse     : function () {
+		nflog.term_reverse.apply(nflog, arguments);
+		return this;
+	},
+	hidden      : function () {
+		nflog.term_hidden.apply(nflog, arguments);
+		return this;
+	},
+};
+
+
 
 /**
  * Flog constructor
@@ -55,6 +104,8 @@ Flog.createLevel = function (level, color) {
  * Inherit from Duplex
  */
 Flog.prototype.__proto__ = stream.Duplex.prototype;
+
+Flog.prototype.native = nflog;
 
 Flog.prototype._write = function (chunk, encoding, next) {
 	var len = this.buffer.length + chunk.length;
@@ -122,4 +173,4 @@ flog.info("info");
 flog.debug("debug");
 flog.warn("warn");
 flog.error("error");
-flog.big("yoooo"); 
+flog.big("yoooo");
