@@ -1,4 +1,4 @@
-flog
+flogger
 ====
 
 fast native logging for node.js
