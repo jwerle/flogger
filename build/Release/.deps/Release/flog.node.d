@@ -1,1 +1,0 @@
-cmd_Release/flog.node := ./gyp-mac-tool flock ./Release/linker.lock c++ -shared -Wl,-search_paths_first -mmacosx-version-min=10.5 -arch x86_64 -L./Release -install_name @rpath/flog.node  -o Release/flog.node Release/obj.target/flog/flog.o -undefined dynamic_lookup
