@@ -2,8 +2,8 @@
 #include <v8.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstdio>
-#include <string>
+#include <stdio.h>
+#include <string.h>
 
 using namespace v8;
 
