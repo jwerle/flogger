@@ -26,43 +26,43 @@ function formMessage (flog, message) {
  */
 
 Flog.term = Flog.prototype.term = {
-	write       : function () {
+	write : function () {
 		nflog.term_write.apply(nflog, arguments);
 		return this;
 	},
-	bold        : function () {
+	bold : function () {
 		nflog.term_bold.apply(nflog, arguments);
 		return this;
 	},
-	clear       : function () {
+	clear : function () {
 		nflog.term_clear.apply(nflog, arguments);
 		return this;
 	},
-	reset       : function () {
+	reset : function () {
 		nflog.term_reset.apply(nflog, arguments);
 		return this;
 	},
-	bright      : function () {
+	bright : function () {
 		nflog.term_bright.apply(nflog, arguments);
 		return this;
 	},
-	dim         : function () {
+	dim : function () {
 		nflog.term_dim.apply(nflog, arguments);
 		return this;
 	},
-	underline   : function () {
+	underline : function () {
 		nflog.term_underline.apply(nflog, arguments);
 		return this;
 	},
-	blink       : function () {
+	blink : function () {
 		nflog.term_blink.apply(nflog, arguments);
 		return this;
 	},
-	reverse     : function () {
+	reverse : function () {
 		nflog.term_reverse.apply(nflog, arguments);
 		return this;
 	},
-	hidden      : function () {
+	hidden : function () {
 		nflog.term_hidden.apply(nflog, arguments);
 		return this;
 	},
@@ -161,16 +161,3 @@ Flog.prototype.error = function (message) {
  */
 
 var flog = module.exports = Flog();
-
-Flog.createLevel('big', 'green');
-
-flog.on('readable', function () {
-	flog.info("readable");
-})
-
-flog.log("log");
-flog.info("info");
-flog.debug("debug");
-flog.warn("warn");
-flog.error("error");
-flog.big("yoooo");
