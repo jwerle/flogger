@@ -3,6 +3,8 @@ flogger
 
 fast native logging for node.js
 
+[![Build Status](https://travis-ci.org/jwerle/flogger.png?branch=master)](https://travis-ci.org/jwerle/flogger)
+
 ## install
 
 ```sh
