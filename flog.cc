@@ -134,13 +134,28 @@ color_value (const char *name) {
 
 Handle<Value>
 flog (const char *level, const char *color, Handle<Value> val) {
+	int n = color_value(color);
 	String::Utf8Value value(val);
-	if (*color == '\0') {
+
+	// if a level was provided but a color wasn't
+	if (*level != '\0' && *color == '\0') {
 		printf("  %s: %s\n", level, *value);
 	}
+
+	// a level was a omitted then just print value without indentation
+	else if (*level == '\0') {
+		printf("%s\n", *value);
+	}
 	else {
-		int n = color_value(color);
-		printf("  \e[3%dm%s: ", n, level);
+		// if we have an actual color to use
+		// then include it in output
+		if (n != -1) {
+			printf("  \e[3%dm%s: ", n, level);
+		}
+		// else just print level and message
+		else {
+			printf("  %s: ",level);
+		}
 		// reset
 		_term_write("0m");
 		printf("%s\n", *value);
@@ -164,7 +179,7 @@ customlog (const Arguments& args) {
 
 Handle<Value> 
 log (const Arguments& args) {
-  return flog("log", "", args[0]);
+  return flog("", "", args[0]);
 }
 
 Handle<Value> 

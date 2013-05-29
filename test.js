@@ -1,7 +1,25 @@
 var flog = require('./'), util = require('util')
-var n = 1000;
+var n = 100;
 var write = process.stdout.write.bind(process.stdout)
-var msgs = []
+var msgs = [];
+
+flog.on('error', function (message) {
+	flog.warn(["Caught error:", message].join(' '));
+});
+
+flog.createLevel('fatal', 'red');
+flog.createLevel('message');
+
+flog.log("log");
+flog.info("info");
+flog.debug("debug");
+flog.warn("warn");
+flog.error("error");
+
+flog.fatal("fatal");
+flog.message("message");
+
+flog.break();
 
 function bench (name, func) {
 	var start, finish;
@@ -15,8 +33,8 @@ function bench (name, func) {
 }
 
 
-bench("console.log", console.log);
+bench("console.log", console.log.bind(console));
 bench("process.stdout.write", write);
-bench("flog.log", flog.native.log); 
+bench("flog.native.log", flog.native.log); 
 
 console.log(msgs.join('\n'))

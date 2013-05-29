@@ -13,10 +13,10 @@ var nflog = require('bindings')('flog')
  * @param {Flog} flog
  * @param {Mixed} message
  */
-function formMessage (flog, message) {
+function formMessage (self, message) {
 	if (message && typeof message === 'object') message = JSON.stringify(message);
-	var msg = flog.format();
-	msg = msg.replace(/%name/g, flog.name);
+	var msg = self.format();
+	msg = msg.replace(/%name/g, self.name);
 	msg = msg.replace(/%message/g, message);
 	return msg;
 }
@@ -81,31 +81,34 @@ function Flog (name) {
 	if (! (this instanceof Flog)) return new Flog(name);
 	stream.Duplex.call(this, {allowHalfOpen:false});
 	this.name = name || "";
-	this.format = function () {
-		var fmt = []
-		if (this.name) fmt.push('(%name) - ');
-		fmt.push('%message');
-		return fmt.join('');
-	};
 	this.buffer = new Buffer(0);
 	this.push('');
 }
-
-Flog.createLevel = function (level, color) {
-	Flog.prototype[level] = function (message) {
-		message = formMessage(this, message);
-		this.write(message);
-		nflog.customlog(level, color, message);
-		return this;
-	};
-};
 
 /**
  * Inherit from Duplex
  */
 Flog.prototype.__proto__ = stream.Duplex.prototype;
 
-Flog.prototype.native = nflog;
+Flog.prototype.Flog = Flog.Flog = Flog;
+Flog.native = Flog.nflog = Flog.prototype.native = Flog.prototype.nflog = nflog;
+
+Flog.createLevel = Flog.prototype.createLevel = function (level, color) {
+	Flog.prototype[level] = function (message) {
+		message = formMessage(this, message);
+		this.write(message);
+		nflog.customlog(level, color, message);
+		this.emit(level, message);
+		return this;
+	};
+};
+
+Flog.prototype.format = function () {
+	var fmt = []
+	if (this.name) fmt.push('(%name) - ');
+	fmt.push('%message');
+	return fmt.join('');
+};
 
 Flog.prototype._write = function (chunk, encoding, next) {
 	var len = this.buffer.length + chunk.length;
@@ -125,35 +128,40 @@ Flog.prototype.log = function (message) {
 	message = formMessage(this, message);
 	this.write(message);
 	nflog.log(message);
-	return this;
+	this.emit('log', message);
 };
 
 Flog.prototype.info = function (message) {
 	message = formMessage(this, message);
 	this.write(message);
 	nflog.info(message);
-	return this;
+	this.emit('info', message);
 };
 
 Flog.prototype.warn = function (message) {
 	message = formMessage(this, message);
 	this.write(message);
 	nflog.warn(message);
-	return this;
+	this.emit('warn', message);
 };
 
 Flog.prototype.debug = function (message) {
 	message = formMessage(this, message);
 	this.write(message);
 	nflog.debug(message);
-	return this;
+	this.emit('debug', message);
 };
 
 Flog.prototype.error = function (message) {
 	message = formMessage(this, message);
 	this.write(message);
 	nflog.error(message);
-	return this;
+	this.emit('error', message);
+};
+
+Flog.prototype.break = function (n) {
+	var i = 0, n = (typeof n === 'number')? n : 1;
+	for (; i < n; ++i) this.log('');
 };
 
 /**
