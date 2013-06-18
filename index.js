@@ -75,14 +75,17 @@ Flog.term = Flog.prototype.term = {
  *
  * @api public
  * @param {String} name
+ * @param {Boolean} captureErrors - optional (Default: false)
  */
 
-function Flog (name) {
+function Flog (name, captureErrors) {
 	if (! (this instanceof Flog)) return new Flog(name);
 	stream.Duplex.call(this, {allowHalfOpen:false});
 	this.name = name || "";
 	this.buffer = new Buffer(0);
 	this.push('');
+
+	if (captureErrors) this.on('error', function () {});
 }
 
 /**
